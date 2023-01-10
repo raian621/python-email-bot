@@ -23,17 +23,21 @@ The `email-server` endpoint is where an authorized web client should send the em
 {
     "to": [
         "<email-recipient>",
+        ...
     ],
     "cc": [
         "[carbon-copy-email-recipient]",
+        ...
     ],
     "bcc": [
         "[blind-carbon-copy-email-recipient]",
+        ...
     ],
     "subject": "[subject-text]",
     "template": "[template-name]",
     "context": {
         "[context-var1]": "[context-val1]",
+        ...
     },
 }
 ```

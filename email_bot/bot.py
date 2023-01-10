@@ -1,7 +1,7 @@
 from .logger import create_logger
 from email.message import EmailMessage
+from flask import render_template
 import smtplib
-from flask import render_template 
 
 class EmailBot:
     # Logger object that can be instantiated to write logs to a file
@@ -24,22 +24,22 @@ class EmailBot:
             del self.logger
         self.smtpserver.close()
 
-    def send_email(self, to, subject:str, template_path:str, context: dict):
+    def send_email(self, to, subject:str, template:str, context: dict):
         if isinstance(to, str):
             to = [to]
 
-        html = render_template(template_path, **context)
+        html = render_template(template, **context)
         print(html)
 
-        # msg = EmailMessage()
-        # msg.add_header('Content-Type','text/html')
-        # msg.set_payload()
-        # msg['Subject'] = subject
-        # msg['From'] = self.email_address
-        # msg['To'] = to
+        msg = EmailMessage()
+        msg.add_header('Content-Type','text/html')
+        msg.set_payload(html)
+        msg['Subject'] = subject
+        msg['From'] = self.email_address
+        msg['To'] = to
         
-        # email_success = self.smtpserver.send_message(msg)
-        email_success = True
+        email_success = self.smtpserver.send_message(msg)\
+        
         if self.logger:
             if email_success:
                 self.logger.log(f"'{subject}' sent to {to}")

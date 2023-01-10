@@ -3,7 +3,6 @@ from dotenv import load_dotenv
 from os import path
 import os
 import json
-import register
 
 from email_bot import create_email_bot
 
@@ -41,13 +40,17 @@ def email_api():
             os.environ["BOT_EMAIL_PASSWORD"],
             os.environ["SMTP_ADDRESS"],
             os.environ["SMTP_PORT"],
-            os.environ["LOG_FILE"],
+            os.environ["EMAIL_BOT_LOG_FILE"],
         )
+
+    # TODO: check that all keys are valid and present
+
+    print(email_data)
 
     email_sent = email_bot.send_email(
         to = [email_data['to']],
         subject = email_data['subject'],
-        template_path=email_data['template_path'],
+        template = email_data['template'],
         context = email_data['context'],
     )
 
