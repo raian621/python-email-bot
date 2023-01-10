@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, Response
 from dotenv import load_dotenv
 from os import path
 import os
@@ -24,12 +24,10 @@ if (bot_email_password == None):
     should_exit = True
 
 log_file = os.environ['EMAIL_BOT_LOG_FILE']
+smtp_address = os.environ['SMTP_ADDRESS']
+smtp_port = os.environ['SMTP_PORT']
 
 app = Flask(__name__)
-
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
 
 # email_bot is initially None, it will be created upon the first 
 # POST request to the email API
@@ -37,13 +35,34 @@ email_bot = None
 
 @app.route('/email-api', methods=['POST'])
 def email_api():
-    print(bot_email_address)
     email_data = json.loads(request.data)
+    global email_bot
     if email_bot is None:
-        email_bot = create_email_bot(bot_email_address, bot_email_password, log_file)
-    
-    email_bot.send_email()
+        email_bot = create_email_bot(
+            bot_email_address,
+            bot_email_password,
+            smtp_address,
+            smtp_port,
+            log_file
+        )
 
-    return json.dump({
-        "message": "Email sent"
-    })
+    email_sent = email_bot.send_email(
+        to = [email_data['to']],
+        subject = email_data['subject'],
+        template_path=email_data['template_path'],
+        context = email_data['context'],
+    )
+
+    if email_sent:
+        return Response(json.dumps({
+                "message": "Email sent"
+            }),
+            status=201
+        )
+    else:
+        return Response(json.dumps({
+                "message": "Email failed to sent"
+            }),
+            status=301
+        )
+
