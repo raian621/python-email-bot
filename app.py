@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from os import path
 import os
 import json
+import register
 
 from email_bot import create_email_bot
 
@@ -13,19 +14,16 @@ if (load_dotenv(dotenv_path) is False):
     print("ERROR: .env not properly configured.")    
     should_exit = True
 
-bot_email_address = os.environ['BOT_EMAIL_ADDRESS']
-if (bot_email_address == None):
-    print("ERROR: Environment variable 'BOT_EMAIL_ADDRESS' not found.")
-    should_exit = True
+required_env_vars = ['BOT_EMAIL_ADDRESS', 'BOT_EMAIL_PASSWORD', 'SMTP_ADDRESS', 'SMTP_PORT']
+for required in required_env_vars:
+    if (os.environ[required] == None):
+        print(f"ERROR: Required nvironment variable '{required}' not found.")
+        should_exit = True
 
-bot_email_password = os.environ['BOT_EMAIL_PASSWORD']
-if (bot_email_password == None):
-    print("ERROR: Environment variable 'BOT_EMAIL_PASSWORD' not found.")
-    should_exit = True
-
-log_file = os.environ['EMAIL_BOT_LOG_FILE']
-smtp_address = os.environ['SMTP_ADDRESS']
-smtp_port = os.environ['SMTP_PORT']
+# ensure all environment variable errors are reported before exiting
+# so that we don't play "error whack-a-mole" in the future
+if should_exit:
+    exit(1)
 
 app = Flask(__name__)
 
@@ -39,11 +37,11 @@ def email_api():
     global email_bot
     if email_bot is None:
         email_bot = create_email_bot(
-            bot_email_address,
-            bot_email_password,
-            smtp_address,
-            smtp_port,
-            log_file
+            os.environ["BOT_EMAIL_ADDRESS"],
+            os.environ["BOT_EMAIL_PASSWORD"],
+            os.environ["SMTP_ADDRESS"],
+            os.environ["SMTP_PORT"],
+            os.environ["LOG_FILE"],
         )
 
     email_sent = email_bot.send_email(

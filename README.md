@@ -31,7 +31,10 @@ The `email-server` endpoint is where an authorized web client should send the em
         "[blind-carbon-copy-email-recipient]",
     ],
     "subject": "[subject-text]",
-    "body": "<body-text>",
+    "template": "[template-name]",
+    "context": {
+        "[context-var1]": "[context-val1]",
+    },
 }
 ```
 
