@@ -5,6 +5,7 @@ import os
 import json
 
 from email_bot import create_email_bot
+import register_images
 
 dotenv_path = path.join(path.dirname(__file__), '.env')
 should_exit = False
@@ -24,7 +25,7 @@ for required in required_env_vars:
 if should_exit:
     exit(1)
 
-app = Flask(__name__)
+app = Flask(__name__, )
 
 # email_bot is initially None, it will be created upon the first 
 # POST request to the email API
@@ -43,7 +44,7 @@ def email_api():
             os.environ["EMAIL_BOT_LOG_FILE"],
         )
 
-    # TODO: check that all keys are valid and present
+    # TODO: check that all email data keys are valid and present
 
     print(email_data)
 
