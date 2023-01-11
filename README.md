@@ -6,12 +6,12 @@ This email bot is a work in progress. Once finished, the bot will be able to:
 
 - [ ] Run on the cloud in a Docker container.
 - [ ] Communicate with a web server (such as a personal website backend) to authorize API requests so that users cannot send unauthorized emails from the bot.
-- [ ] Send professional looking emails using HTML templates.
+- [x] Send professional looking emails using HTML templates.
 ---
 
 ## Initial API Design
 
-The API endpoints are handled using Flask and include the URIs:
+The API endpoints of this bot are handled using Flask and include the URIs:
 
 ### `/email-server`
 **Method(s)**: `POST`
@@ -23,21 +23,21 @@ The `email-server` endpoint is where an authorized web client should send the em
 {
     "to": [
         "<email-recipient>",
-        ...
+        // ...
     ],
     "cc": [
         "[carbon-copy-email-recipient]",
-        ...
+        // ...
     ],
     "bcc": [
         "[blind-carbon-copy-email-recipient]",
-        ...
+        // ...
     ],
     "subject": "[subject-text]",
     "template": "[template-name]",
     "context": {
         "[context-var1]": "[context-val1]",
-        ...
+        // ...
     },
 }
 ```
