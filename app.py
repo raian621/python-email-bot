@@ -43,7 +43,7 @@ def email_api():
             os.environ["EMAIL_BOT_LOG_FILE"],
         )
 
-    # TODO: check that all keys are valid and present
+    # TODO: check that all email data keys are valid and present
 
     print(email_data)
 
