@@ -33,6 +33,7 @@ email_bot = None
 
 @app.route('/email-api', methods=['POST'])
 def email_api():
+    print(request.url)
     email_data = json.loads(request.data)
     global email_bot
     if email_bot is None:
@@ -67,3 +68,6 @@ def email_api():
             }),
             status=301
         )
+
+if __name__ == "__main__":
+    app.run(debug=True)
