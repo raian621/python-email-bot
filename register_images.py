@@ -7,5 +7,5 @@ cat_entry = ImageEntry(
     img_type="gif"
 )
 
-# register ImageEntry cat_entry to "generic.html" template 
+# register ImageEntry cat_entry to "bot-email-template.html" template 
 image_registry["bot-email-template.html"] = [cat_entry]
