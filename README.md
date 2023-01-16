@@ -113,4 +113,3 @@ def build_mime_multipart_message(email_address:str, to, subject:str, template:st
 
     return msg
 ```
-

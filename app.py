@@ -25,7 +25,7 @@ for required in required_env_vars:
 if should_exit:
     exit(1)
 
-app = Flask(__name__, )
+app = Flask(__name__)
 
 # email_bot is initially None, it will be created upon the first 
 # POST request to the email API
@@ -67,4 +67,3 @@ def email_api():
             }),
             status=301
         )
-
