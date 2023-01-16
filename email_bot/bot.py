@@ -60,8 +60,8 @@ class EmailBot:
         self.smtpserver.close()
 
     def send_email(self, to, subject:str, template:str, context: dict):
-        # msg.add_header('Content-Type','text/html')
         msg = build_mime_multipart_message(self.email_address, to, subject, template, context)        
+        
         try:
             self.smtp_server.send_message(msg)
             if self.logger:
