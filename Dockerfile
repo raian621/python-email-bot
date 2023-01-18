@@ -1,6 +1,5 @@
 FROM alpine:3.14
 
-RUN apk update
 RUN apk add --update --no-cache \
     curl \
     bash \
@@ -16,7 +15,7 @@ RUN apk add --update --no-cache \
 
 # add user and create app
 RUN adduser -D server
-RUN addgroup server nginx
+# RUN addgroup server nginx
 RUN mkdir /home/app/ && chown -R server:server /home/app
 RUN mkdir -p /var/log/email-bot && touch /var/log/email-bot/email-bot.err.log && touch /var/log/email-bot/email-bot.out.log
 RUN chown -R server:server /var/log/email-bot
