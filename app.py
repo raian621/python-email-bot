@@ -45,6 +45,7 @@ if should_exit:
     exit(1)
 
 app = Flask(__name__)
+# TODO: change this to an environment or config variable
 app.secret_key = 'XMlvpaxlgYl8JpTcI5x9JQ'
 
 # email_bot is initially None, it will be created upon the first 

@@ -81,6 +81,10 @@ def get_api_keys():
     return apikeys
 
 def delete_api_keys(to_be_deleted):
+    if type(to_be_deleted) == list:
+        apikeys.remove(apikeys[to_be_deleted])
+        return
+
     for user in to_be_deleted:
         apikeys.remove(apikeys[user])
 
