@@ -11,9 +11,9 @@ class Database:
 
     def connect_to_database(
         self,
-        dbname="postgres", 
-        user="postgres", 
-        password=None, 
+        dbname="postgres",
+        user="postgres",
+        password=None,
         host="localhost",
         port=5432
     ):
@@ -83,12 +83,7 @@ registered_users = {
     }
 }
 
-apikeys = [
-    { "title": "Cat key", "created": "today", "expires": "tommorrow", "username": "bob" },
-    { "title": "Rat key", "created": "today", "expires": "tommorrow", "username": "bob" },
-    { "title": "Fox key", "created": "today", "expires": "tommorrow", "username": "bob" },
-    { "title": "Dog key", "created": "today", "expires": "tommorrow", "username": "bob" },
-]
+apikeys = []
 
 def get_user_from_db(username):
     if username in registered_users:
@@ -96,31 +91,22 @@ def get_user_from_db(username):
     else:
         return None
 
-def get_api_keys_for_user(username):
-    keys = []
-    
-    for key in apikeys:
-        if key["username"] == username:
-            keys.append(key)
+def get_api_keys():
+    return apikeys
 
-    return keys
+def delete_api_keys(to_be_deleted):
+    for user in to_be_deleted:
+        apikeys.remove(apikeys[user])
 
-def delete_api_keys_for_user(username, user_apikeys):
-    pass
-
-def add_api_key_for_user(username, apikey):
-    if username not in apikeys:
-        apikeys[username] = []
-    
-    apikeys[username].append(apikey)
+def add_api_key(apikey):
+    apikey["key"] = ph.hash(apikey["key"])
+    apikeys.append(apikey)
 
     return True
 
-def get_api_key_by_title(title):
-    keys = []
-
+def get_api_key(username):
     for key in apikeys:
-        if key["title"] == title:
-            keys.append(key)
+        if key["username"] == username:
+            return key
 
-    return keys
+    return None

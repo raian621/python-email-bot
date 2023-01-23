@@ -2,7 +2,7 @@ from argon2 import PasswordHasher, exceptions
 from datetime import timedelta, datetime
 from secrets import token_urlsafe
 from base64 import b64encode
-from database import registered_users
+from database import registered_users, get_api_key
 from flask import session
 from time import sleep
 
@@ -50,11 +50,13 @@ def login_user(username, password):
 
         session.modified = True
 
-def generate_api_key():
+def generate_api_token():
     return token_urlsafe(16)
 
-def authenticate_api_key(keyname, apikey):
-    apikey_from_db = get_api_key_by_name(keyname)
+def authenticate_api_key(username, apikey):
+    apikey_from_db = get_api_key(username)
+    if apikey_from_db["username"] != username:
+        return False
 
     try:
         ph.verify(apikey_from_db["key"], apikey)

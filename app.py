@@ -4,7 +4,7 @@ from auth import login_user, generate_api_token, authenticate_api_key
 from os import path
 from time import sleep
 from datetime import datetime
-from database import get_api_keys_for_user, add_api_key_for_user, delete_api_keys_for_user
+from database import get_api_keys, add_api_key, delete_api_keys
 import os
 import json
 
@@ -39,47 +39,53 @@ email_bot = None
 @app.route('/', methods=['GET', 'POST'])
 def dashboard():
     if 'auth' in session and session['auth']:
-        return render_template('dashboard/dashboard.html', apikeys=get_api_keys_for_user(session["username"]))
+        return render_template('dashboard/dashboard.html')
     return redirect(url_for('login'))
 
 @app.route('/send-email', methods=['POST'])
 def email_api():
-    print(request.url)
-    email_data = json.loads(request.data)
-    global email_bot
-    if email_bot is None:
-        email_bot = create_email_bot(
-            os.environ["BOT_EMAIL_ADDRESS"],
-            os.environ["BOT_EMAIL_PASSWORD"],
-            os.environ["SMTP_ADDRESS"],
-            os.environ["SMTP_PORT"],
-            os.environ["EMAIL_BOT_LOG_FILE"],
-        )
-    
-    # TODO: check that all email data keys are valid and present
 
-    print(email_data)
+    if request.method == 'POST':
+        authorization = request.authorization
 
-    email_sent = email_bot.send_email(
-        to = [email_data['to']],
-        subject = email_data['subject'],
-        template = email_data['template'],
-        context = email_data['context'],
-    )
+        if not authenticate_api_key(authorization.username, authorization.password):
+            return Response(status=401)
 
-    if email_sent:
-        return Response(json.dumps({
-                "message": "Email sent"
-            }),
-            status=201
-        )
-    else:
-        return Response(json.dumps({
-                "message": "Email failed to sent"
-            }),
-            status=301
+        print(request.url)
+        email_data = json.loads(request.data)
+        global email_bot
+        if email_bot is None:
+            email_bot = create_email_bot(
+                os.environ["BOT_EMAIL_ADDRESS"],
+                os.environ["BOT_EMAIL_PASSWORD"],
+                os.environ["SMTP_ADDRESS"],
+                os.environ["SMTP_PORT"],
+                os.environ["EMAIL_BOT_LOG_FILE"],
+            )
+        
+        # TODO: check that all email data keys are valid and present
+
+        print(email_data)
+
+        email_sent = email_bot.send_email(
+            to = [email_data['to']],
+            subject = email_data['subject'],
+            template = email_data['template'],
+            context = email_data['context'],
         )
 
+        if email_sent:
+            return Response(json.dumps({
+                    "message": "Email sent"
+                }),
+                status=201
+            )
+        else:
+            return Response(json.dumps({
+                    "message": "Email failed to sent"
+                }),
+                status=301
+            )
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -117,29 +123,25 @@ def api_keys():
         return Response(status=401)
     
     if request.method == 'GET':
-        return Response(json.dumps(get_api_keys_for_user(session["username"])), headers={"content_type": "application/json"})
+        return Response(json.dumps(get_api_keys()), headers={"content_type": "application/json"})
     if request.method == 'POST':
         data = request.json
         print(data)
-        if 'title' in data and 'created' in data and 'expires' in data:
+        if 'title' in data and 'created' in data and 'expires' in data and 'username' in data:
             # truncate unneeded data
             apitoken = generate_api_token()
-            add_api_key_for_user(session["username"], {
+            add_api_key({
+                "key": apitoken,
                 "title": data["title"],
                 "created": data["created"], 
                 "expires": data["expires"],
-                "username": session["username"]
+                "username": data["username"]
             })
             return Response(json.dumps({"apitoken": apitoken}))
         return Response(status=400)
     if request.method == 'DELETE':
         data = request.json
-        if 'title' in data and 'created' in data and 'expires' in data:
-            # truncate data
-            add_api_key_for_user(session["username"], {
-                "title": data["title"], 
-                "created": data["created"],
-                "expires": data["expires"],
-                "username": session["username"]
-            })
+      
+        print(data)
+        delete_api_keys(data["toBeDeleted"])
         return Response()

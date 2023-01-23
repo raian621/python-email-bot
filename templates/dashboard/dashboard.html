@@ -22,6 +22,7 @@
                 <th>Title</th>
                 <th>Created</th>
                 <th>Expires</th>
+                <th>User</th>
             </tr>
         </table>
         <div class="api-key-dashboard-control">
@@ -39,6 +40,8 @@
                 <form class="modal-form" onsubmit="handleAPIKeyCreation(event)">
                     <label for="title">Title:</label>
                     <input id="title-input" name="title" type="text" required/>
+                    <label for="username">Username</label>
+                    <input id="username-input" name="username" type="username" required/>
                     <label for="expires">Expiration Date:</label>
                     <input id="expires-input" name="expires" type="date"/>
                     <button type="submit">Submit</button>

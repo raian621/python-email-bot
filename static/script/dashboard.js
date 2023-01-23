@@ -28,6 +28,9 @@ async function populateKeyTable() {
         const expiresField = document.createElement("td");
         expiresField.append(document.createTextNode(apikey.expires))
         row.appendChild(expiresField);
+        const nameField = document.createElement("td");
+        nameField.append(document.createTextNode(apikey.username))
+        row.appendChild(nameField);
 
         table.appendChild(row);
     })
@@ -43,21 +46,35 @@ function toggleCreateAPIKeyModal() {
 async function handleAPIKeyCreation(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const apikey = {};
+    let apikey = {};
 
     formData.forEach((value, key) => {
         apikey[key] = value;
     })
 
     apikey.created = (new Date()).toISOString()
+    const { created, expires, title, username } = apikey;
+    apikey = { 
+        created: created,
+        expires: expires,
+        title: title, 
+        username: username 
+    };
+    console.log(apikey);
 
-    await fetch('/api-keys',{
+    const res = await fetch('/api-keys', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
+        // username, created, expired, title
         body: JSON.stringify(apikey)
     });
+
+    if (res.ok) {
+        const { apitoken } = await res.json()
+        alert(apitoken);
+    }
 
     populateKeyTable();
     toggleCreateAPIKeyModal();
@@ -65,11 +82,13 @@ async function handleAPIKeyCreation(e) {
 
 async function removeAPIKeys() {
     const table = document.getElementById("api-key-table");
+    const tableChildren = [...table.children];
 
     const toBeDeleted = [];
 
-    table.children.forEach((child) => {
-        if (child.children[0].checked) {
+    tableChildren.forEach((child) => {
+        console.log(child.children);
+        if (child.children[0].children[0].checked) {
             toBeDeleted.push(child.children[1].textContent)
         }
     })
@@ -79,7 +98,7 @@ async function removeAPIKeys() {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify(toBeDeleted)
+        body: JSON.stringify({toBeDeleted: toBeDeleted})
     });
 
     populateKeyTable();
