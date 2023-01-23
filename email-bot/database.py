@@ -81,12 +81,18 @@ def get_api_keys():
     return apikeys
 
 def delete_api_keys(to_be_deleted):
+<<<<<<< HEAD:email-bot/database.py
+    print(to_be_deleted)
+=======
     if type(to_be_deleted) == list:
         apikeys.remove(apikeys[to_be_deleted])
         return
 
+>>>>>>> auth:database.py
     for user in to_be_deleted:
-        apikeys.remove(apikeys[user])
+        for key in apikeys:
+            if key["username"] == user:
+                apikeys.remove(key)
 
 def add_api_key(apikey):
     apikey["key"] = ph.hash(apikey["key"])

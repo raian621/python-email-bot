@@ -4,49 +4,103 @@ I'm new to this whole web development thing. I want to create an email bot to ha
 
 This email bot is a work in progress. Once finished, the bot will be able to:
 
-- [ ] Run on the cloud in a Docker container.
-- [ ] Communicate with a web server
-- [ ] Authorize the API requests via `jwt` or `Oauth2`
+- [x] Run on the cloud in a Docker container.
+- [x] Communicate with a web server.
+- [x] Authorize API requests using API keys.
 - [x] Send professional looking emails using HTML templates.
+- [ ] Use SSL or TLS encryption service
+- [ ] Support uploading HTML templates and images using the email-bot dashboard.
+
+---
+
+## Setup
+
+### Postgres Database
+
+This email bot uses a PostgreSQL database to store and manage API keys. *An instance of a Postgres database MUST be started before API keys can be registered for the email bot.*
+
+### Email Bot
+
+A couple of environment variables need to be set for the email bot to work  either with a .env file or with docker:
+
+Variable | Use
+--|--
+`BOT_EMAIL_ADDRESS`   | Email address that the bot uses to send emails
+`BOT_EMAIL_PASSWORD`  | Password for email that the bot uses to send emails
+`EMAIL_BOT_LOG_FILE`* | Optional log file location
+`SMTP_ADDRESS`        | Address to the SMTP server for your email provider (ex. `smtp.google.com`)
+`SMTP_PORT`*          | SMTP port for your email provider's SMTP server (defaults to 465)
+`POSTGRES_USERNAME`   | Username used to access PostgreSQL database
+`POSTGRES_PASSWORD`   | Password used to access PostgreSQL database
+`POSTGRES_HOSTNAME`   | Address in which the PostgresSQL database is hosted
+`POSTGRES_PORT`*      | Port that the PostgresSQL database is hosted (defaults to 5432)
+
 ---
 
 ## Initial API Design
 
-The API endpoints to this bot are handled using Flask and include the URIs:
+The API endpoints to this bot are handled using Flask and include the URLs:
 
-### `/email-server`
+### `/` (root endpoint)
+**Method(s)**: `GET`
+
+This endpoint leads to a dashboard webpage where the registered Key Manager can create, delete, and manage API keys (works by sending HTTP requests to the `/api-keys` endpoint). In future versions, the Key Manager should be able to upload HTML templates and images to the API server.
+
+If an unauthenticated user attempts to access this endpoint, they are redirected to the `/login` page.
+
+### `/login`
+**Methods(s)**: `GET`, `POST`
+
+Allows the Key Manager to log in. Redirects to the home dashboard page upon successful authentication.
+
+### `/logout`
+**Methods(s)**: `GET`
+
+Allows the Key Manager to log out and makes the server to clear the Key Manager's session. Redirects to login page after clearing the Key Manager's session.
+
+### `/send-email`
 **Method(s)**: `POST`
 
-The `email-server` endpoint is where an authorized web client should send the email data as a simple JSON object in the request body.
+The `email-server` endpoint is where an authorized web client should send the email data as a simple `POST` request.
 
-**Example JSON:** 
-```json
-{
-    "to": [
-        "<email-recipient>",
-        // ...
-    ],
-    "cc": [
-        "[carbon-copy-email-recipient]",
-        // ...
-    ],
-    "bcc": [
-        "[blind-carbon-copy-email-recipient]",
-        // ...
-    ],
-    "subject": "[subject-text]",
-    "template": "[template-name]",
-    "context": {
-        "[context-var1]": "[context-val1]",
-        // ...
+Additionally, a API client must provide a username as well as an API key in the `Authorization` header of a post in order to send an email using the API.
+
+***Javascript `fetch` example:***
+
+```js
+// base 64 encoded authorization header:
+const encoded = btoa("<username>:<api-key>");
+
+fetch('https://api.websitesite.com/', {
+    methods: 'POST',
+    headers: {
+        'Authorization': `Basic ${encoded}`,
+        'Content-Type': 'application/json'
     },
-}
+    // email data gets passed in body as JSON
+    body: JSON.stringify({
+        "to": [
+            "<email-recipients>",
+        ],
+        "cc": [
+            "[carbon-copy-email-recipients]",
+        ],
+        "bcc": [
+            "[blind-carbon-copy-email-recipients]",
+        ],
+        "subject": "[subject-text]",
+        "template": "[template-file-name]",
+        "context": {
+            "[context-var1]": "[context-val1]",
+        },
+    })
+});
 ```
 
-### `/email-auth`
-**Method(s)**: `POST`?
+### `/api-keys`
+**Method(s):** `GET`, `POST`, `DELETE`
 
-I'm not entirely sure how I want to implement this yet. Probably will use jwt or Oauth2
+Basic CRUD endpoint for fetching, creating, and deleting api keys. In future versions, there will be an `PUT` method where the Key Manager can update the data for API key.
 
 ---
 
@@ -89,6 +143,8 @@ image_registry["generic.html"] = [cat_entry]
 ```
 
 After the images are registered in the `TemplateImageRegistry` the bot can fetch all the `ImageEntry`s for a given template whenever the template is being rendered.
+
+In future versions, this method of registering files will probably be deprecated in favor of a file uploading feature.
 
 ```python
 from image_registry import image_registry, ImageEntry

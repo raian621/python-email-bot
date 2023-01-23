@@ -63,7 +63,7 @@ def generate_api_token():
 
 def authenticate_api_key(username, apikey):
     apikey_from_db = get_api_key(username)
-    if apikey_from_db["username"] != username:
+    if apikey == None or apikey_from_db["username"] != username:
         return False
 
     try:
