@@ -152,6 +152,5 @@ def api_keys():
     if request.method == 'DELETE':
         data = request.json
       
-        print(data)
         delete_api_keys(data["toBeDeleted"])
         return Response()
