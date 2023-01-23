@@ -46,6 +46,7 @@ if should_exit:
     exit(1)
 
 app = Flask(__name__)
+# TODO: change this to an environment or config variable
 app.secret_key = 'XMlvpaxlgYl8JpTcI5x9JQ'
 
 minify(app=app, html=True, js=True, cssless=True, static=True)
