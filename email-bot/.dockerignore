@@ -120,15 +120,6 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
 # Spyder project settings
 .spyderproject
 .spyproject
@@ -166,5 +157,5 @@ log.txt
 # ignore venv config
 pyvenv.cfg
 
-.pgpass
-.kmpass
+# ignore venv folder
+venv/
