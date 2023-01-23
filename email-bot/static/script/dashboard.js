@@ -67,7 +67,6 @@ async function handleAPIKeyCreation(e) {
         headers: {
             'Content-Type': 'application/json'
         },
-        // username, created, expired, title
         body: JSON.stringify(apikey)
     });
 
@@ -89,7 +88,7 @@ async function removeAPIKeys() {
     tableChildren.forEach((child) => {
         console.log(child.children);
         if (child.children[0].children[0].checked) {
-            toBeDeleted.push(child.children[1].textContent)
+            toBeDeleted.push(child.children[4].textContent)
         }
     })
 

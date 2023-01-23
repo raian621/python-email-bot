@@ -1,4 +1,5 @@
 from flask import Flask, request, Response, render_template, session, redirect, url_for
+from flask_minify import minify
 from dotenv import load_dotenv
 from argon2 import PasswordHasher
 from auth import login_user, generate_api_token, authenticate_api_key, check_for_valid_kmpass
@@ -46,6 +47,8 @@ if should_exit:
 
 app = Flask(__name__)
 app.secret_key = 'XMlvpaxlgYl8JpTcI5x9JQ'
+
+minify(app=app, html=True, js=True, cssless=True, static=True)
 
 # email_bot is initially None, it will be created upon the first 
 # POST request to the email API
