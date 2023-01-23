@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Log in</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href="{{url_for('static', filename='style/login.css')}}">
+    <script src="{{url_for('static', filename='script/login.js')}}"></script>
+</head>
+<body>
+    <div class="login-form-wrapper">
+        <h1>Email API Portal</h1>
+        <form onsubmit="submitHandler(event)" class="login-form">
+            <label for="username">Username</label>
+            <input id="username-input" name="username" type="text" placeholder="Enter your username">
+            <label for="password">Password</label>
+            <input id="password-input" name="password" type="password" placeholder="Enter your password">
+            <button type="submit">Login</button>
+        </form>
+    </div>
+</body>
+</html>

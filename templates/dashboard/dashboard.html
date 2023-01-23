@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <title>Dashboard</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <link rel='stylesheet' type='text/css' media='screen' href="{{url_for('static', filename='style/dashboard.css')}}">
+    <script defer src="{{url_for('static', filename='script/dashboard.js')}}"></script>
+</head>
+<body>
+    <header>
+        <nav>
+            <a class="logout" href="{{ url_for('logout') }}">Log out</a>
+        </nav>
+    </header>
+    <h1>Dashboard</h1>
+    <section class="api-key-dashboard">
+        <h3>API Keys</h3>
+        <table id="api-key-table">
+            <tr>
+                <th></th>
+                <th>Title</th>
+                <th>Created</th>
+                <th>Expires</th>
+            </tr>
+        </table>
+        <div class="api-key-dashboard-control">
+            <button onclick="toggleCreateAPIKeyModal()">Add API Key</button>
+            <button onclick="removeAPIKeys()">Remove Selected API Key(s)</button>
+        </div>
+    </section>
+    <section id="create-api-key-modal" class="create-api-key-modal hidden">
+        <div class="modal-contents">
+            <div class="modal-header">
+                <h3>Create API Key</h3>
+                <button onclick="toggleCreateAPIKeyModal()">x</button>
+            </div>
+            <div>
+                <form class="modal-form" onsubmit="handleAPIKeyCreation(event)">
+                    <label for="title">Title:</label>
+                    <input id="title-input" name="title" type="text" required/>
+                    <label for="expires">Expiration Date:</label>
+                    <input id="expires-input" name="expires" type="date"/>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+        <button id="modal-bg" class="modal-bg" onclick="toggleCreateAPIKeyModal()"></button>
+    </section>
+</body>
+</html>

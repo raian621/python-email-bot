@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  email-bot:
+    build: .
+    ports:
+      - "8000:5000"
+    environment:
+      POSTGRES_PASSWORD_FILE: /home/app/.pgpasswd
+
+  postgres:
+    image: postgres
+    tty: true
+    restart: always
+    ports: 
+      - "5433:5432"
+    environment:
+      POSTGRES_PASSWORD_FILE: .pgpasswd
+      POSTGRES_DB: emailbotdb

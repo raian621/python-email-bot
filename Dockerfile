@@ -7,7 +7,7 @@ RUN apk add --update --no-cache \
     python3 \
     py3-pip \
     py3-virtualenv \
-    openrc \
+    postgresql-dev \
     musl-dev \
     python3-dev \
     linux-headers \
@@ -15,7 +15,6 @@ RUN apk add --update --no-cache \
 
 # add user and create app
 RUN adduser -D server
-# RUN addgroup server nginx
 RUN mkdir /home/app/ && chown -R server:server /home/app
 RUN mkdir -p /var/log/email-bot && touch /var/log/email-bot/email-bot.err.log && touch /var/log/email-bot/email-bot.out.log
 RUN chown -R server:server /var/log/email-bot
@@ -24,6 +23,8 @@ WORKDIR /home/app
 
 # copy all the files to the container
 COPY --chown=server:server nginx.conf /etc/nginx/nginx.conf
+COPY --chown=server:server .pgpass /home/app/.pgpass
+RUN chmod 600 /home/app/.pgpass
 COPY --chown=server:server . .
 
 # venv
