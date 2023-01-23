@@ -16,6 +16,7 @@ const submitHandler = async(e) => {
             'Content-Type': 'application/json',
         },
     })
-    
-    console.log(res);
+
+    if (res.ok)
+        location.reload();
 }

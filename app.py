@@ -1,6 +1,7 @@
 from flask import Flask, request, Response, render_template, session, redirect, url_for
 from dotenv import load_dotenv
-from auth import login_user, generate_api_token, authenticate_api_key
+from argon2 import PasswordHasher
+from auth import login_user, generate_api_token, authenticate_api_key, check_for_valid_kmpass
 from os import path
 from time import sleep
 from datetime import datetime
@@ -13,6 +14,20 @@ import register_images
 
 dotenv_path = path.join(path.dirname(__file__), '.env')
 should_exit = False
+
+if not check_for_valid_kmpass():
+    if 'KM_PASSWORD' in os.environ and 'KM_USERNAME' in os.environ:
+        kmusername = os.environ['KM_USERNAME']
+        kmpassword = os.environ['KM_PASSWORD']
+
+        ph = PasswordHasher()
+        kmpassword = ph.hash(kmpassword)
+
+        with open('.kmpass', 'w') as kmpass:
+            kmpass.write(f"{kmusername}:{ph.hash(kmpassword)}")
+    else:
+        print("ERROR: No Key Manager credentials specified in environment or file '.kmpass'. Without Key Manager credentials, you cannot create or  manage api keys.")
+        should_exit = True
 
 if (load_dotenv(dotenv_path) is False):
     print("ERROR: .env not properly configured.")    
@@ -75,11 +90,7 @@ def email_api():
         )
 
         if email_sent:
-            return Response(json.dumps({
-                    "message": "Email sent"
-                }),
-                status=201
-            )
+            return Response()
         else:
             return Response(json.dumps({
                     "message": "Email failed to sent"
@@ -90,10 +101,9 @@ def email_api():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        if 'expires' in session and session['expires'].timestamp() > datetime.now().timestamp():
-            if session['auth']:
-                print("user authenticated")
-                return redirect(url_for('dashboard'))
+        if 'auth' in session and session['auth']:
+            print("user authenticated")
+            return redirect(url_for('dashboard'))
 
         return render_template('login/login.html')
     if request.method == 'POST':
@@ -105,11 +115,8 @@ def login():
         login_user(username, password)
         
         res = Response()
-        if session['auth']:
-            return redirect(url_for('dashboard'))
-        else:
+        if not session['auth']:
             res.status = 401
-        print(session)
         return res
 
 @app.route('/logout', methods=['GET'])

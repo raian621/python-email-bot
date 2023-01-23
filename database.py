@@ -74,22 +74,8 @@ def create_tables():
         """)
         
 ph = PasswordHasher()
-registered_users = { 
-    "bob": {
-        "username": "bob",
-        "password": ph.hash("password"),
-        "role": "admin",
-        "locked": False
-    }
-}
 
 apikeys = []
-
-def get_user_from_db(username):
-    if username in registered_users:
-        return registered_users(username)
-    else:
-        return None
 
 def get_api_keys():
     return apikeys
