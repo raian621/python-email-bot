@@ -35,6 +35,8 @@ Variable | Use
 `POSTGRES_HOSTNAME`   | Address in which the PostgresSQL database is hosted
 `POSTGRES_PORT`*      | Port that the PostgresSQL database is hosted (defaults to 5432)
 
+\* *optional environment variable*
+
 ---
 
 ## Initial API Design
